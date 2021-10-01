@@ -1,17 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { Provider as ReduxProvider } from 'react-redux';
+import { installApps } from './master/services';
+import { createStore } from './store';
+import { setApps, stopLoading } from './store/app/actions';
+import { CssBaseline } from '@material-ui/core';
+
+const store = createStore();
+
+async function load() {
+  const apps = await installApps([
+    import('./pet-int-req-protocolar')
+  ]);
+
+  store.dispatch(setApps(apps));
+  store.dispatch(stopLoading());
+}
+
+load();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ReduxProvider store={store}>
+      <CssBaseline>
+        <App />
+      </CssBaseline>
+    </ReduxProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
